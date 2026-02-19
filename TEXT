@@ -1,0 +1,133 @@
+# Prácticas Linux – GRUB, Bash Scripts, Red y SSH
+
+**Distro:** Kali Linux  
+**VM:** VMware Workstation  
+**Host:** Windows  
+
+---
+
+## Práctica 1 – Configuración de GRUB (Timeout 20s)
+
+### Editar configuración de GRUB
+sudo nano /etc/default/grub
+
+### Cambios aplicados
+GRUB_TIMEOUT_STYLE=menu  
+GRUB_TIMEOUT=20
+
+### Aplicar cambios
+sudo update-grub
+
+### Reiniciar sistema
+sudo reboot
+
+---
+
+## Práctica 2 – Scripts en Bash
+
+### Script 1: Backup con TAR de /home/tu_usuario
+
+#### Crear archivo
+nano backup_home.sh
+
+#### Contenido del script
+#!/bin/bash
+
+USUARIO=$(whoami)
+FECHA=$(date +"%d-%m-%Y:%H:%M")
+DESTINO="$HOME/backup-$FECHA.tar.gz"
+
+tar -czvf "$DESTINO" /home/$USUARIO
+
+echo "Backup creado en: $DESTINO"
+
+#### Dar permisos de ejecución
+chmod +x backup_home.sh
+
+#### Ejecutar script
+./backup_home.sh
+
+---
+
+### Script 2: Guardar ifconfig en el Escritorio con nombre elegido
+
+#### Instalar ifconfig (si no existe)
+sudo apt install net-tools
+
+#### Crear archivo
+nano guardar_red.sh
+
+#### Contenido del script
+#!/bin/bash
+
+read -p "¿Qué nombre deseas para el archivo? " NOMBRE
+RUTA="$HOME/Escritorio/$NOMBRE.txt"
+
+ifconfig > "$RUTA"
+
+echo "Archivo creado en: $RUTA"
+
+#### Dar permisos de ejecución
+chmod +x guardar_red.sh
+
+#### Ejecutar script
+./guardar_red.sh
+
+---
+
+## Práctica 3 – Red en Bridge y SSH
+
+### Configurar VM en modo Bridge (VMware)
+VM -> Settings -> Network Adapter -> Bridged
+
+### Ver IP en Kali Linux
+ip a
+
+### Probar ping desde Windows (PowerShell)
+ping 192.168.X.XX
+
+---
+
+### Instalar y habilitar SSH en Kali
+sudo apt update
+sudo apt install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+### Conectarse por SSH desde Windows
+ssh tu_usuario@192.168.X.XX
+
+---
+
+### Generar llaves SSH en Windows (sin passphrase)
+ssh-keygen -t rsa -b 4096
+
+Ruta usada:
+C:\Users\TuUsuario\.ssh\id_rsa  
+C:\Users\TuUsuario\.ssh\id_rsa.pub
+
+---
+
+### Copiar llave pública al servidor Linux
+type %USERPROFILE%\.ssh\id_rsa.pub | ssh tu_usuario@192.168.X.XX "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
+### Ajustar permisos en Kali
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
+---
+
+### Probar conexión SSH sin contraseña
+ssh tu_usuario@192.168.X.XX
+
+---
+
+## Evidencias
+
+- Captura de /etc/default/grub con GRUB_TIMEOUT=20  
+- Captura del menú GRUB  
+- Backup .tar.gz con fecha y hora  
+- Archivo de ifconfig en el Escritorio  
+- Ping desde Windows  
+- Conexión SSH con contraseña  
+- Conexión SSH con llaves (sin contraseña)
